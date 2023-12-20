@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  db: 
+    container_name: NetStream
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: cecile
+      POSTGRES_PASSWORD: example14
+      
+    ports: 
+      - "5432:5432"
+
+    volumes: 
+      - db:/var/lib/postgresql/data
+
+  pg-admin:
+    image: dpage/pgadmin4:6
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@email.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_LISTEN_PORT: 5050
+
+    ports:
+      - "5050:5050"
+
+volumes:
+  db:
