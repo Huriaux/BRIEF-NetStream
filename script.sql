@@ -179,3 +179,14 @@ select * from Watching;
 
 
 -- REQUÊTE SQL :
+
+-- Les titres et dates de sortie des films du plus récent au plus ancien
+select title, release_dt from Movies
+order by release_dt desc;
+
+-- Les noms, prénoms et âges des acteurs/actrices de plus de 30 ans dans l'ordre alphabétique
+select * from Actors
+where birthday >= (current_date - interval '30 Years');
+
+-- La liste des acteurs/actrices principaux pour un film donné
+
