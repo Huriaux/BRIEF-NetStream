@@ -6,6 +6,9 @@ GENERATION DE DONNÉES (by Chat GPT):
 ('Inception', '2010-07-16', '148', 'DiCaprio', 'Leonardo', 'Dom Cobb', '1974-11-11', 'Nolan', 'Christopher'),
 ('La La Land', '2016-12-09', '128', 'Gosling', 'Ryan', 'Sebastian', '1980-11-12', 'Chazelle', 'Damien'),
 ('The Shawshank Redemption', '1994-09-23', '142', 'Freeman', 'Morgan', 'Ellis Boyd Redding', '1937-06-01', 'Darabont', 'Frank'),
+
+('Deadpool', '2016-02-12', '108', 'Reynolds', 'Ryan', 'Wade Wilson / Deadpool', '1976-10-23', 'Miller', 'Tim'),
+('Deadpool 2', '2018-05-10', '119', 'Reynolds', 'Ryan', 'Wade Wilson / Deadpool', '1976-10-23', 'Leitch', 'David'),
 ('Pulp Fiction', '1994-10-14', '154', 'Travolta', 'John', 'Vincent Vega', '1954-02-18', 'Tarantino', 'Quentin'),
 ('The Dark Knight', '2008-07-18', '152', 'Bale', 'Christian', 'Bruce Wayne', '1974-01-30', 'Nolan', 'Christopher'),
 ('Forrest Gump', '1994-07-06', '142', 'Hanks', 'Tom', 'Forrest Gump', '1956-07-09', 'Zemeckis', 'Robert'),
@@ -19,9 +22,7 @@ GENERATION DE DONNÉES (by Chat GPT):
 ('Goodfellas', '1990-09-19', '146', 'De Niro', 'Robert', 'Henry Hill', '1943-08-17', 'Scorsese', 'Martin'),
 ('Casablanca', '1942-11-26', '102', 'Bogart', 'Humphrey', 'Rick Blaine', '1899-12-25', 'Curtiz', 'Michael');*
 
-('Deadpool', '2016-02-12', '108', 'Reynolds', 'Ryan', 'Wade Wilson / Deadpool', '1976-10-23', 'Miller', 'Tim'),
-('Deadpool 2', '2018-05-10', '119', 'Reynolds', 'Ryan', 'Wade Wilson / Deadpool', '1976-10-23', 'Leitch', 'David'),
-('Free Guy', '2021-08-13', '115', 'Reynolds', 'Ryan', 'Guy', '1976-10-23', 'Levitch', 'Shawn'),
+
 
 ('first_name', 'last_name', 'email', 'password_user', 'favorite_movies_list', creation_dt, modification_dt)
 
@@ -45,3 +46,40 @@ GENERATION DE DONNÉES (by Chat GPT):
 ('Elijah', 'Fisher', 'elijah.fisher@email.com', 'abc123', "('The Dark Knight', 'Forrest Gump')", '2023-01-18', '2023-01-18'),
 ('Grace', 'Cooper', 'grace.cooper@email.com', 'qwerty', "('Titanic', 'The Godfather')", '2023-01-19', '2023-01-19'),
 ('Liam', 'Reed', 'liam.reed@email.com', 'pass123', "('The Matrix', 'Fight Club')", '2023-01-20', '2023-01-20')
+
+
+
+EXPLICATION :
+
+-- je crée ma table --
+
+(1) CREATE TABLE <nom_de_table> ();
+
+
+-- je crée une fonction, puis un trigger qui appelle la fonction. 
+Résultat : à chaque fois que j'ajoute (INSERT INTO) une nouvelle ligne, 
+automatiquement la colonne 'creation_dt' prends la valeur de la 
+date et de l'heure d'ajout des données pour chaque ligne ajoutée --
+
+(2) CREATE OR REPLACE FUNCTION nom_de_fonction() ...;
+(3) CREATE TRIGGER nom_de_fonction_trigger ...;
+
+
+j'insert les données
+(4) INSERT INTO <nom_de_table> () VALUES ();
+
+
+-- je crée une nouvelle fonction, puis un trigger également 
+qui appelle la fonction. Résultat : à chaque fois que je modifie 
+une valeur (UPDATE ON), automatiquement la colonne 'modification_dt'
+prends la valeur de la date et de l'heure de modification des 
+données pour chaque ligne modifiée --
+
+(5) CREATE OR REPLACE FUNCTION nom_de_fonction() ...;
+(6) CREATE TRIGGER nom_de_fonction_trigger ...;
+
+-- je modifie des données --
+(7) UPDATE ON <nom_de_table> ();
+
+-- j'affiche toutes mes données de la table concernée --
+(8) SELECT * FROM <nom_de_table>;

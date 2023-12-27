@@ -1,16 +1,19 @@
--- todo = TABLE ACTEURS
+-- todo = TABLE  'ACTEURS'
+--remarque : j'ai volontairement retiré la colonne 'role de l'acteur' et j'ai choisi de plutôt l'intégrer dans une table de liaison.
+-- Car j'avais des acteurs qui jouaient dans plusieurs films mais dans des rôles différents et celà créer des doublons actor_id.
+-- J'ai juger ma méthode plus clair, même si elle m'a donné plus de travail et de réflexion. 
 
 -- création table des Acteurs
 CREATE TABLE Actors (
 	actor_id SERIAL PRIMARY KEY,
-	first_name VARCHAR(100) NOT NULL,
 	last_name VARCHAR(100) NOT NULL,
-	role_actor VARCHAR(100) NOT NULL,
+	first_name VARCHAR(100) NOT NULL,
 	birthday DATE,
-	creation_dt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+	creation_dt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	modification_dt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Création fonction (trigger)
+-- Création fonction (trigger) => si ON AJOUTE des données
 CREATE OR REPLACE FUNCTION set_creation_date() -- déclare ma fonction
 RETURNS TRIGGER AS $create_date_actors$ --  retourne la variable trigger
 BEGIN -- démarre la fonction
@@ -26,60 +29,107 @@ FOR EACH ROW -- pour chaque ligne
 EXECUTE FUNCTION set_creation_date(); -- exécute la fonction pour chaque nouvelle ligne insérée
 
 -- Ajout données
-insert into Actors (first_name, last_name, role_actor, birthday) 
-values
-	('DiCaprio', 'Leonardo', 'Dom Cobb', '1974-11-11'),
-	('Ryan', 'Sebastian', 'Gosling', '1980-11-12'),
-	('Freeman', 'Morgan', 'Ellis Boyd Redding', '1937-06-01'),
-	('Reynolds', 'Ryan', 'Wade Wilson / Deadpool', '1976-10-23'),
-	('Travolta', 'John', 'Vincent Vega', '1954-02-18'),
-	('Bale', 'Christian', 'Bruce Wayne', '1974-01-30'),
-	('Hanks', 'Tom', 'Forrest Gump', '1956-07-09'),
-	('DiCaprio', 'Leonardo', 'Jack Dawson', '1974-11-11'),
-	('Brando', 'Marlon', 'Vito Corleone', '1924-04-03'),
-	('Reeves', 'Keanu', 'Neo', '1964-09-02'),
-	('Norton', 'Edward', 'Narrator', '1969-08-18'),
-	('Neeson', 'Liam', 'Oskar Schindler', '1952-06-07'),
-	('Foster', 'Jodie', 'Clarice Starling', '1962-11-19'),
-	('Eisenberg', 'Jesse', 'Mark Zuckerberg', '1983-10-05'),
-	('De Niro', 'Robert', 'Henry Hill', '1943-08-17'),
-	('Bogart', 'Humphrey', 'Rick Blaine', '1899-12-25');
+INSERT INTO Actors (last_name, first_name, birthday) 
+VALUES
+	('DiCaprio', 'Leonardo', '1974-11-11'),
+	('Gosling', 'Ryan', '1980-11-12'),
+	('Freeman', 'Morgan', '1937-06-01'),
+	('Reynolds', 'Ryan', '1976-10-23'),
+	('Travolta', 'John', '1954-02-18'),
+	('Bale', 'Christian', '1974-01-30'),
+	('Hanks', 'Tom', '1956-07-09'),
+	('Brando', 'Marlon', '1924-04-03'),
+	('Reeves', 'Keanu', '1964-09-02'),
+	('Norton', 'Edward', '1969-08-18'),
+	('Neeson', 'Liam', '1952-06-07'),
+	('Foster', 'Jodie', '1962-11-19'),
+	('Eisenberg', 'Jesse', '1983-10-05'),
+	('De Niro', 'Robert', '1943-08-17'),
+	('Bogart', 'Humphrey', '1899-12-25');
+
+-- Création fonction (trigger) => si ON MODIFIE des données
+CREATE OR REPLACE FUNCTION set_modification_date()
+RETURNS TRIGGER AS $update_date_actors$ --  retourne la variable trigger
+BEGIN -- démarre la fonction
+	NEW.modification_dt := CURRENT_TIMESTAMP; -- attribut de la date et l'heure actuelles à la colonne modification_dt
+	RETURN NEW; -- retourne la nouvelle ligne modifiée
+END;
+$update_date_actors$ LANGUAGE plpgsql; -- variable trigger + spécifie le langage
+
+--Création du trigger (en appelant la fonction 'set_modification_date()')
+CREATE TRIGGER set_modification_date_trigger
+BEFORE UPDATE ON Actors -- avant l'insertion dans la table Actors
+FOR EACH ROW -- pour chaque ligne
+EXECUTE FUNCTION set_modification_date(); -- exécute la fonction pour chaque nouvelle ligne insérée
 
 -- Afficher table
-select * from Actors;
+SELECT * FROM Actors;
 
 
 
 
--- todo = TABLE DIRECTEURS
+-- todo = [TABLE DE LIAISON]  'RÔLES' <---> 'ACTEURS'
+
+-- Création de la table relationnelle 'Roles'
+CREATE TABLE Roles (
+	role_id SERIAL PRIMARY KEY,
+	role_actor VARCHAR(100) NOT NULL,
+	actor_id INT NOT NULL REFERENCES Actors (actor_id));
+
+-- ajout données
+INSERT INTO Roles (role_actor, actor_id) 
+VALUES
+	('Dom Cobb', 1),
+	('Sebastian', 2),
+	('Ellis Boyd Redding', 3),
+	('Wade Wilson / Deadpool', 4),
+	('Vincent Vega', 5),
+	('Bruce Wayne', 6),
+	('Forrest Gump', 7),
+	('Jack Dawson', 1),
+	('Vito Corleone', 8),
+	('Neo', 9),
+	('Narrator', 10),
+	('Oskar Schindler', 11),
+	('Clarice Starling', 12),
+	('Mark Zuckerberg', 13),
+	('Henry Hill', 14),
+	('Rick Blaine', 15);
+
+SELECT * FROM Roles;
+
+
+
+
+-- todo = TABLE  'DIRECTEURS'
 
 -- création table des Réalisateurs
-create table Directors (
-	director_id serial primary key,
-	first_name VARCHAR(100) not null,
-	last_name VARCHAR(100) not null,
-	creation_dt TIMESTAMP NOT NULL,
-	modification_dt TIMESTAMP NOT null
+CREATE TABLE Directors (
+	director_id SERIAL PRIMARY KEY,
+	last_name VARCHAR(100) NOT NULL,
+	first_name VARCHAR(100) NOT NULL,
+	creation_dt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	modification_dt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Création fonction (trigger)
-CREATE OR REPLACE FUNCTION set_creation_date() -- déclare ma fonction
-RETURNS TRIGGER AS $create_date_directors$ --  retourne la variable trigger
+CREATE OR REPLACE FUNCTION set_creation_date()
+RETURNS TRIGGER AS $create_date_directors$
 BEGIN -- démarre la fonction
-	NEW.creation_dt := CURRENT_TIMESTAMP; -- attribut de la date et l'heure actuelles à la colonne creation_dt
-	RETURN NEW; -- retourne la nouvelle ligne modifiée
+	NEW.creation_dt := CURRENT_TIMESTAMP;
+	RETURN NEW;
 END;
-$create_date_directors$ LANGUAGE plpgsql; -- variable trigger + spécifie le langage
+$create_date_directors$ LANGUAGE plpgsql;
 
 --Création du trigger (en appelant la fonction 'set_creation_date()')
 CREATE TRIGGER set_creation_date_trigger
-BEFORE INSERT ON Directors -- avant l'insertion dans la table Actors
-FOR EACH ROW -- pour chaque ligne
-EXECUTE FUNCTION set_creation_date(); -- exécute la fonction pour chaque nouvelle ligne insérée
+BEFORE INSERT ON Directors
+FOR EACH ROW
+EXECUTE FUNCTION set_creation_date();
 
 -- ajout données
-insert into Directors (first_name, last_name) 
-values
+INSERT INTO Directors (last_name, first_name) 
+VALUES
 	('Nolan', 'Christopher'),
 	('Chazelle', 'Damien'),
 	('Darabont', 'Frank'),
@@ -96,102 +146,131 @@ values
 	('Scorsese', 'Martin'),
 	('Curtiz', 'Michael');
 
+-- Création fonction (trigger) => si ON MODIFIE des données
+CREATE OR REPLACE FUNCTION set_modification_date()
+RETURNS TRIGGER AS $update_date_directors$
+BEGIN 
+	NEW.modification_dt := CURRENT_TIMESTAMP; 
+	RETURN NEW; 
+END;
+$update_date_directors$ LANGUAGE plpgsql; 
+
+--Création du trigger (en appelant la fonction 'set_modification_date()')
+CREATE TRIGGER set_modification_date_trigger
+BEFORE UPDATE ON Directors 
+FOR EACH ROW 
+EXECUTE FUNCTION set_modification_date(); 
+
 -- Afficher table
-select * from Directors;
+SELECT * FROM Directors;
 
 
 
 
--- todo = TABLE FILMS
+-- todo = TABLE  'FILMS'
 
 -- Création de la table Films
-create table Movies (
-	movie_id serial primary key,
-	title VARCHAR(100) not null,
-	release_dt DATE not null,
-	duration INT not null,
-	actor_id serial REFERENCES Actors (actor_id),
-	director_id serial REFERENCES Directors (director_id),
-	creation_dt TIMESTAMP NOT NULL,
-	modification_dt TIMESTAMP NOT null
+CREATE TABLE Movies (
+	movie_id SERIAL PRIMARY KEY,
+	title VARCHAR(100) NOT NULL,
+	release_dt DATE NOT NULL,
+	duration INT NOT NULL,
+	actor_id INT NOT NULL REFERENCES Actors (actor_id),
+	director_id INT NOT NULL REFERENCES Directors (director_id),
+	creation_dt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	modification_dt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Création fonction (trigger)
-CREATE OR REPLACE FUNCTION set_creation_date() -- déclare ma fonction
-RETURNS TRIGGER AS $create_date_movies$ --  retourne la variable trigger
+CREATE OR REPLACE FUNCTION set_creation_date()
+RETURNS TRIGGER AS $create_date_movies$
 BEGIN -- démarre la fonction
-	NEW.creation_dt := CURRENT_TIMESTAMP; -- attribut de la date et l'heure actuelles à la colonne creation_dt
-	RETURN NEW; -- retourne la nouvelle ligne modifiée
+	NEW.creation_dt := CURRENT_TIMESTAMP;
+	RETURN NEW;
 END;
-$create_date_movies$ LANGUAGE plpgsql; -- variable trigger + spécifie le langage
+$create_date_movies$ LANGUAGE plpgsql;
 
 --Création du trigger (en appelant la fonction 'set_creation_date()')
 CREATE TRIGGER set_creation_date_trigger
-BEFORE INSERT ON Movies -- avant l'insertion dans la table Actors
-FOR EACH ROW -- pour chaque ligne
-EXECUTE FUNCTION set_creation_date(); -- exécute la fonction pour chaque nouvelle ligne insérée
+BEFORE INSERT ON Movies
+FOR EACH ROW
+EXECUTE FUNCTION set_creation_date();
 
 -- ajout données
--- todo NE PAS OUBLIER DE MODIFIER LES 'DEFAULT' -> ENTRÉE MANUELLE !!
-insert into Movies (title, release_dt, duration, actor_id, director_id, creation_dt, modification_dt) 
-values
-	('Inception', '2010-07-16', 148, DEFAULT, DEFAULT),
-	('La La Land', '2016-12-09', 128, DEFAULT, DEFAULT),
-	('The Shawshank Redemption', '1994-09-23', 142, DEFAULT, DEFAULT),
-	('Deadpool', '2016-02-12', 108, DEFAULT, DEFAULT),
-	('Deadpool 2', '2018-05-10', 119, DEFAULT, DEFAULT),
-	('Pulp Fiction', '1994-10-14', 154, DEFAULT, DEFAULT),
-	('The Dark Knight', '2008-07-18', 152, DEFAULT, DEFAULT),
-	('Forrest Gump', '1994-07-06', 142, DEFAULT, DEFAULT),
-	('Titanic', '1997-12-19', 195, DEFAULT, DEFAULT),
-	('The Godfather', '1972-03-24', 175, DEFAULT, DEFAULT),
-	('The Matrix', '1999-03-31', 136, DEFAULT, DEFAULT),
-	('Fight Club', '1999-10-15', 139, DEFAULT, DEFAULT),
-	('Schindler''s List', '1993-11-30', 195, DEFAULT, DEFAULT),
-	('The Silence of the Lambs', '1991-02-14', 118, DEFAULT, DEFAULT),
-	('The Social Network', '2010-09-24', 120, DEFAULT, DEFAULT),
-	('Goodfellas', '1990-09-19', 146, DEFAULT, DEFAULT),
-	('Casablanca', '1942-11-26', 102, DEFAULT, DEFAULT);
+INSERT INTO Movies (title, release_dt, duration, actor_id, director_id) 
+VALUES
+	('Inception', '2010-07-16', 148, 1, 1),
+	('La La Land', '2016-12-09', 128, 2, 2),
+	('The Shawshank Redemption', '1994-09-23', 142, 3, 3),
+	('Deadpool', '2016-02-12', 108, 4, 4),
+	('Deadpool 2', '2018-05-10', 119, 4, 5),
+	('Pulp Fiction', '1994-10-14', 154, 5, 6),
+	('The Dark Knight', '2008-07-18', 152, 6, 1),
+	('Forrest Gump', '1994-07-06', 142, 7, 7),
+	('Titanic', '1997-12-19', 195, 1, 8),
+	('The Godfather', '1972-03-24', 175, 8, 9),
+	('The Matrix', '1999-03-31', 136, 9, 10),
+	('Fight Club', '1999-10-15', 139, 10, 13),
+	('Schindler''s List', '1993-11-30', 195, 11, 11),
+	('The Silence of the Lambs', '1991-02-14', 118, 12, 12),
+	('The Social Network', '2010-09-24', 120, 13, 13),
+	('Goodfellas', '1990-09-19', 146, 14, 14),
+	('Casablanca', '1942-11-26', 102, 15, 15);
+
+-- Création fonction (trigger) => si ON MODIFIE des données
+CREATE OR REPLACE FUNCTION set_modification_date()
+RETURNS TRIGGER AS $update_date_movies$
+BEGIN 
+	NEW.modification_dt := CURRENT_TIMESTAMP; 
+	RETURN NEW; 
+END;
+$update_date_movies$ LANGUAGE plpgsql; 
+
+--Création du trigger (en appelant la fonction 'set_modification_date()')
+CREATE TRIGGER set_modification_date_trigger
+BEFORE UPDATE ON Movies 
+FOR EACH ROW 
+EXECUTE FUNCTION set_modification_date(); 
 
 -- Afficher table
-select * from Movies;
+SELECT * FROM Movies;
 
 
 
 
--- todo = TABLE UTILISATEURS
+-- todo = TABLE  'UTILISATEURS'
 
 -- Création de la table Utilisateurs
-create table Users (
-	user_id serial primary key,
+CREATE TABLE Users (
+	user_id SERIAL PRIMARY KEY,
 	first_name VARCHAR(100),
 	last_name VARCHAR(100),
 	email VARCHAR(250),
 	password_user VARCHAR(50),
 	role_user VARCHAR(50),
 	favorite_movies_list VARCHAR(100),
-	creation_dt TIMESTAMP NOT NULL,
-	modification_dt TIMESTAMP NOT null
+	creation_dt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	modification_dt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Création fonction (trigger)
-CREATE OR REPLACE FUNCTION set_creation_date() -- déclare ma fonction
-RETURNS TRIGGER AS $create_date_users$ --  retourne la variable trigger
-BEGIN -- démarre la fonction
-	NEW.creation_dt := CURRENT_TIMESTAMP; -- attribut de la date et l'heure actuelles à la colonne creation_dt
-	RETURN NEW; -- retourne la nouvelle ligne modifiée
+CREATE OR REPLACE FUNCTION set_creation_date()
+RETURNS TRIGGER AS $create_date_users$
+BEGIN 
+	NEW.creation_dt := CURRENT_TIMESTAMP;
+	RETURN NEW; 
 END;
-$create_date_users$ LANGUAGE plpgsql; -- variable trigger + spécifie le langage
+$create_date_users$ LANGUAGE plpgsql;
 
 --Création du trigger (en appelant la fonction 'set_creation_date()')
 CREATE TRIGGER set_creation_date_trigger
-BEFORE INSERT ON Users -- avant l'insertion dans la table Actors
-FOR EACH ROW -- pour chaque ligne
-EXECUTE FUNCTION set_creation_date(); -- exécute la fonction pour chaque nouvelle ligne insérée
+BEFORE INSERT ON Users
+FOR EACH ROW
+EXECUTE FUNCTION set_creation_date();
 
 -- ajout données
-insert into Users (first_name, last_name, email, password_user, role_user, favorite_movies_list, creation_dt, modification_dt) 
-values
+INSERT INTO Users (first_name, last_name, email, password_user, role_user, favorite_movies_list) 
+VALUES
 	('John', 'Doe', 'john.doe@email.com', 'password123', 2, 'user'),
 	('Jane', 'Smith', 'jane.smith@email.com', 'pass456', 14, 'user'),
 	('Alice', 'Johnson', 'alice.johnson@email.com', 'abc123', 7, 'user'),
@@ -213,24 +292,39 @@ values
 	('Grace', 'Cooper', 'grace.cooper@email.com', 'qwerty', 14, 'user'),
 	('Liam', 'Reed', 'liam.reed@email.com', 'pass123', 14, 'user');
 
+-- Création fonction (trigger) => si ON MODIFIE des données
+CREATE OR REPLACE FUNCTION set_modification_date()
+RETURNS TRIGGER AS $update_date_users$
+BEGIN 
+	NEW.modification_dt := CURRENT_TIMESTAMP; 
+	RETURN NEW; 
+END;
+$update_date_users$ LANGUAGE plpgsql; 
+
+--Création du trigger (en appelant la fonction 'set_modification_date()')
+CREATE TRIGGER set_modification_date_trigger
+BEFORE UPDATE ON Users 
+FOR EACH ROW 
+EXECUTE FUNCTION set_modification_date(); 
+
 -- Afficher table
-select * from Users;
+SELECT * FROM Users;
 
 
 
 
--- todo = TABLE FILMS REGARDÉS
+-- todo = [TABLE DE LIAISON]  'FILMS REGARDÉS'  (movie_id <---> user_id)
 
 -- Création de la table relationnelle Watching
-create table Watching (
-	id serial primary key,
-	movie_id int REFERENCES Movies (movie_id),
-	user_id int REFERENCES Users (user_id)
+CREATE TABLE Watching (
+	id SERIAL PRIMARY KEY,
+	movie_id INT REFERENCES Movies (movie_id),
+	user_id INT REFERENCES Users (user_id)
 );
 
 -- ajout données
-insert into Watching (user_id, movie_id) 
-values
+INSERT INTO Watching (user_id, movie_id) 
+VALUES
 	(1, 6),
 	(2, 2),
 	(3, 4),
@@ -252,22 +346,19 @@ values
 	(19, 13),
 	(20, 6);
 
-select * from Watching;
-
-
-
-
--- todo = TABLE FILMS FAVORIS
+SELECT * FROM Watching;
 
 
 
 
 
--- REQUÊTE SQL :
+
+
+-- todo =  REQUÊTE SQL :
 
 -- Les titres et dates de sortie des films du plus récent au plus ancien
-select title, release_dt from Movies
-order by release_dt desc;
+SELECT title, release_dt FROM Movies
+ORDER BY release_dt DESC;
 
 -- Les noms, prénoms et âges des acteurs/actrices de plus de 30 ans dans l'ordre alphabétique
 
