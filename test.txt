@@ -19,6 +19,9 @@ GENERATION DE DONNÉES (by Chat GPT):
 ('Goodfellas', '1990-09-19', '146', 'De Niro', 'Robert', 'Henry Hill', '1943-08-17', 'Scorsese', 'Martin'),
 ('Casablanca', '1942-11-26', '102', 'Bogart', 'Humphrey', 'Rick Blaine', '1899-12-25', 'Curtiz', 'Michael');*
 
+('Deadpool', '2016-02-12', '108', 'Reynolds', 'Ryan', 'Wade Wilson / Deadpool', '1976-10-23', 'Miller', 'Tim'),
+('Deadpool 2', '2018-05-10', '119', 'Reynolds', 'Ryan', 'Wade Wilson / Deadpool', '1976-10-23', 'Leitch', 'David'),
+('Free Guy', '2021-08-13', '115', 'Reynolds', 'Ryan', 'Guy', '1976-10-23', 'Levitch', 'Shawn'),
 
 ('first_name', 'last_name', 'email', 'password_user', 'favorite_movies_list', creation_dt, modification_dt)
 

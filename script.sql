@@ -1,37 +1,57 @@
+-- todo = TABLE ACTEURS
+
 -- création table des Acteurs
-CREATE table Actors (
-	actor_id serial PRIMARY KEY,
+CREATE TABLE Actors (
+	actor_id SERIAL PRIMARY KEY,
 	first_name VARCHAR(100) NOT NULL,
-	last_name VARCHAR(100) not null,
-	role_actor VARCHAR(100) not null,
+	last_name VARCHAR(100) NOT NULL,
+	role_actor VARCHAR(100) NOT NULL,
 	birthday DATE,
-	creation_dt TIMESTAMP NOT NULL,
-	modification_dt TIMESTAMP NOT null
+	creation_dt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- ajout données
-insert into Actors (first_name, last_name, role_actor, birthday, creation_dt, modification_dt) 
-values
-	('DiCaprio', 'Leonardo', 'Dom Cobb', '1974-11-11', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Ryan', 'Sebastian', 'Gosling', '1980-11-12', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Freeman', 'Morgan', 'Ellis Boyd Redding', '1937-06-01', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Travolta', 'John', 'Vincent Vega', '1954-02-18', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Bale', 'Christian', 'Bruce Wayne', '1974-01-30', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Hanks', 'Tom', 'Forrest Gump', '1956-07-09', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('DiCaprio', 'Leonardo', 'Jack Dawson', '1974-11-11', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Brando', 'Marlon', 'Vito Corleone', '1924-04-03', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Reeves', 'Keanu', 'Neo', '1964-09-02', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Norton', 'Edward', 'Narrator', '1969-08-18', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Neeson', 'Liam', 'Oskar Schindler', '1952-06-07', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Foster', 'Jodie', 'Clarice Starling', '1962-11-19', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Eisenberg', 'Jesse', 'Mark Zuckerberg', '1983-10-05', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('De Niro', 'Robert', 'Henry Hill', '1943-08-17', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Bogart', 'Humphrey', 'Rick Blaine', '1899-12-25', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'));
+-- Création fonction (trigger)
+CREATE OR REPLACE FUNCTION set_creation_date() -- déclare ma fonction
+RETURNS TRIGGER AS $create_date_actors$ --  retourne la variable trigger
+BEGIN -- démarre la fonction
+	NEW.creation_dt := CURRENT_TIMESTAMP; -- attribut de la date et l'heure actuelles à la colonne creation_dt
+	RETURN NEW; -- retourne la nouvelle ligne modifiée
+END;
+$create_date_actors$ LANGUAGE plpgsql; -- variable trigger + spécifie le langage
 
+--Création du trigger (en appelant la fonction 'set_creation_date()')
+CREATE TRIGGER set_creation_date_trigger
+BEFORE INSERT ON Actors -- avant l'insertion dans la table Actors
+FOR EACH ROW -- pour chaque ligne
+EXECUTE FUNCTION set_creation_date(); -- exécute la fonction pour chaque nouvelle ligne insérée
+
+-- Ajout données
+insert into Actors (first_name, last_name, role_actor, birthday) 
+values
+	('DiCaprio', 'Leonardo', 'Dom Cobb', '1974-11-11'),
+	('Ryan', 'Sebastian', 'Gosling', '1980-11-12'),
+	('Freeman', 'Morgan', 'Ellis Boyd Redding', '1937-06-01'),
+	('Reynolds', 'Ryan', 'Wade Wilson / Deadpool', '1976-10-23'),
+	('Travolta', 'John', 'Vincent Vega', '1954-02-18'),
+	('Bale', 'Christian', 'Bruce Wayne', '1974-01-30'),
+	('Hanks', 'Tom', 'Forrest Gump', '1956-07-09'),
+	('DiCaprio', 'Leonardo', 'Jack Dawson', '1974-11-11'),
+	('Brando', 'Marlon', 'Vito Corleone', '1924-04-03'),
+	('Reeves', 'Keanu', 'Neo', '1964-09-02'),
+	('Norton', 'Edward', 'Narrator', '1969-08-18'),
+	('Neeson', 'Liam', 'Oskar Schindler', '1952-06-07'),
+	('Foster', 'Jodie', 'Clarice Starling', '1962-11-19'),
+	('Eisenberg', 'Jesse', 'Mark Zuckerberg', '1983-10-05'),
+	('De Niro', 'Robert', 'Henry Hill', '1943-08-17'),
+	('Bogart', 'Humphrey', 'Rick Blaine', '1899-12-25');
+
+-- Afficher table
 select * from Actors;
 
 
 
+
+-- todo = TABLE DIRECTEURS
 
 -- création table des Réalisateurs
 create table Directors (
@@ -42,29 +62,47 @@ create table Directors (
 	modification_dt TIMESTAMP NOT null
 );
 
--- ajout données
-insert into Directors (first_name, last_name, creation_dt, modification_dt) 
-values
-	('Nolan', 'Christopher', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Chazelle', 'Damien', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Darabont', 'Frank', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Tarantino', 'Quentin', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Nolan', 'Christopher', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Zemeckis', 'Robert', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Cameron', 'James', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Coppola', 'Francis Ford', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Wachowski', 'Lana', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Fincher', 'David', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Spielberg', 'Steven', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Demme', 'Jonathan', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Fincher', 'David', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Scorsese', 'Martin', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Curtiz', 'Michael', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'));
+-- Création fonction (trigger)
+CREATE OR REPLACE FUNCTION set_creation_date() -- déclare ma fonction
+RETURNS TRIGGER AS $create_date_directors$ --  retourne la variable trigger
+BEGIN -- démarre la fonction
+	NEW.creation_dt := CURRENT_TIMESTAMP; -- attribut de la date et l'heure actuelles à la colonne creation_dt
+	RETURN NEW; -- retourne la nouvelle ligne modifiée
+END;
+$create_date_directors$ LANGUAGE plpgsql; -- variable trigger + spécifie le langage
 
+--Création du trigger (en appelant la fonction 'set_creation_date()')
+CREATE TRIGGER set_creation_date_trigger
+BEFORE INSERT ON Directors -- avant l'insertion dans la table Actors
+FOR EACH ROW -- pour chaque ligne
+EXECUTE FUNCTION set_creation_date(); -- exécute la fonction pour chaque nouvelle ligne insérée
+
+-- ajout données
+insert into Directors (first_name, last_name) 
+values
+	('Nolan', 'Christopher'),
+	('Chazelle', 'Damien'),
+	('Darabont', 'Frank'),
+	('Miller', 'Tim'),
+	('Leitch', 'David'),	
+	('Tarantino', 'Quentin'),
+	('Zemeckis', 'Robert'),
+	('Cameron', 'James'),
+	('Coppola', 'Francis Ford'),
+	('Wachowski', 'Lana'),
+	('Spielberg', 'Steven'),
+	('Demme', 'Jonathan'),
+	('Fincher', 'David'),
+	('Scorsese', 'Martin'),
+	('Curtiz', 'Michael');
+
+-- Afficher table
 select * from Directors;
 
 
 
+
+-- todo = TABLE FILMS
 
 -- Création de la table Films
 create table Movies (
@@ -78,29 +116,50 @@ create table Movies (
 	modification_dt TIMESTAMP NOT null
 );
 
+-- Création fonction (trigger)
+CREATE OR REPLACE FUNCTION set_creation_date() -- déclare ma fonction
+RETURNS TRIGGER AS $create_date_movies$ --  retourne la variable trigger
+BEGIN -- démarre la fonction
+	NEW.creation_dt := CURRENT_TIMESTAMP; -- attribut de la date et l'heure actuelles à la colonne creation_dt
+	RETURN NEW; -- retourne la nouvelle ligne modifiée
+END;
+$create_date_movies$ LANGUAGE plpgsql; -- variable trigger + spécifie le langage
+
+--Création du trigger (en appelant la fonction 'set_creation_date()')
+CREATE TRIGGER set_creation_date_trigger
+BEFORE INSERT ON Movies -- avant l'insertion dans la table Actors
+FOR EACH ROW -- pour chaque ligne
+EXECUTE FUNCTION set_creation_date(); -- exécute la fonction pour chaque nouvelle ligne insérée
+
 -- ajout données
+-- todo NE PAS OUBLIER DE MODIFIER LES 'DEFAULT' -> ENTRÉE MANUELLE !!
 insert into Movies (title, release_dt, duration, actor_id, director_id, creation_dt, modification_dt) 
 values
-	('Inception', '2010-07-16', 148, DEFAULT, DEFAULT, to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('La La Land', '2016-12-09', 128, DEFAULT, DEFAULT, to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('The Shawshank Redemption', '1994-09-23', 142, DEFAULT, DEFAULT, to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Pulp Fiction', '1994-10-14', 154, DEFAULT, DEFAULT, to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('The Dark Knight', '2008-07-18', 152, DEFAULT, DEFAULT, to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Forrest Gump', '1994-07-06', 142, DEFAULT, DEFAULT, to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Titanic', '1997-12-19', 195, DEFAULT, DEFAULT, to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('The Godfather', '1972-03-24', 175, DEFAULT, DEFAULT, to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('The Matrix', '1999-03-31', 136, DEFAULT, DEFAULT, to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Fight Club', '1999-10-15', 139, DEFAULT, DEFAULT, to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Schindler''s List', '1993-11-30', 195, DEFAULT, DEFAULT, to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('The Silence of the Lambs', '1991-02-14', 118, DEFAULT, DEFAULT, to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('The Social Network', '2010-09-24', 120, DEFAULT, DEFAULT, to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Goodfellas', '1990-09-19', 146, DEFAULT, DEFAULT, to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Casablanca', '1942-11-26', 102, DEFAULT, DEFAULT, to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'));
+	('Inception', '2010-07-16', 148, DEFAULT, DEFAULT),
+	('La La Land', '2016-12-09', 128, DEFAULT, DEFAULT),
+	('The Shawshank Redemption', '1994-09-23', 142, DEFAULT, DEFAULT),
+	('Deadpool', '2016-02-12', 108, DEFAULT, DEFAULT),
+	('Deadpool 2', '2018-05-10', 119, DEFAULT, DEFAULT),
+	('Pulp Fiction', '1994-10-14', 154, DEFAULT, DEFAULT),
+	('The Dark Knight', '2008-07-18', 152, DEFAULT, DEFAULT),
+	('Forrest Gump', '1994-07-06', 142, DEFAULT, DEFAULT),
+	('Titanic', '1997-12-19', 195, DEFAULT, DEFAULT),
+	('The Godfather', '1972-03-24', 175, DEFAULT, DEFAULT),
+	('The Matrix', '1999-03-31', 136, DEFAULT, DEFAULT),
+	('Fight Club', '1999-10-15', 139, DEFAULT, DEFAULT),
+	('Schindler''s List', '1993-11-30', 195, DEFAULT, DEFAULT),
+	('The Silence of the Lambs', '1991-02-14', 118, DEFAULT, DEFAULT),
+	('The Social Network', '2010-09-24', 120, DEFAULT, DEFAULT),
+	('Goodfellas', '1990-09-19', 146, DEFAULT, DEFAULT),
+	('Casablanca', '1942-11-26', 102, DEFAULT, DEFAULT);
 
+-- Afficher table
 select * from Movies;
 
 
 
+
+-- todo = TABLE UTILISATEURS
 
 -- Création de la table Utilisateurs
 create table Users (
@@ -115,34 +174,52 @@ create table Users (
 	modification_dt TIMESTAMP NOT null
 );
 
+-- Création fonction (trigger)
+CREATE OR REPLACE FUNCTION set_creation_date() -- déclare ma fonction
+RETURNS TRIGGER AS $create_date_users$ --  retourne la variable trigger
+BEGIN -- démarre la fonction
+	NEW.creation_dt := CURRENT_TIMESTAMP; -- attribut de la date et l'heure actuelles à la colonne creation_dt
+	RETURN NEW; -- retourne la nouvelle ligne modifiée
+END;
+$create_date_users$ LANGUAGE plpgsql; -- variable trigger + spécifie le langage
+
+--Création du trigger (en appelant la fonction 'set_creation_date()')
+CREATE TRIGGER set_creation_date_trigger
+BEFORE INSERT ON Users -- avant l'insertion dans la table Actors
+FOR EACH ROW -- pour chaque ligne
+EXECUTE FUNCTION set_creation_date(); -- exécute la fonction pour chaque nouvelle ligne insérée
+
 -- ajout données
 insert into Users (first_name, last_name, email, password_user, role_user, favorite_movies_list, creation_dt, modification_dt) 
 values
-	('John', 'Doe', 'john.doe@email.com', 'password123', 2, 'user', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Jane', 'Smith', 'jane.smith@email.com', 'pass456', 14, 'user', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Alice', 'Johnson', 'alice.johnson@email.com', 'abc123', 7, 'user', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Bob', 'Williams', 'bob.williams@email.com', 'qwerty', 7, 'admin', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Emily', 'Davis', 'emily.davis@email.com', 'pass123', 1, 'user', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Michael', 'Jones', 'michael.jones@email.com', 'letmein', 2, 'user', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Sophia', 'Brown', 'sophia.brown@email.com', 'iloveyou', 13, 'user', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Daniel', 'Moore', 'daniel.moore@email.com', 'password', 11, 'user', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Olivia', 'Taylor', 'olivia.taylor@email.com', 'passpass', 5, 'user', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('William', 'Hill', 'william.hill@email.com', '123456', 15, 'user', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Ava', 'Clark', 'ava.clark@email.com', 'hello123', 3,  'user', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('James', 'Johnson', 'james.johnson@email.com', 'passpass', 6, 'admin', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Mia', 'Walker', 'mia.walker@email.com', 'password123', 2, 'user', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Benjamin', 'Young', 'benjamin.young@email.com', 'qwerty123', 4, 'user', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Emma', 'Hall', 'emma.hall@email.com', 'letmein123', 8, 'user', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Logan', 'Ward', 'logan.ward@email.com', 'iloveyou123', 9, 'user', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Avery', 'Baker', 'avery.baker@email.com', 'pass456', 11, 'user', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Elijah', 'Fisher', 'elijah.fisher@email.com', 'abc123', 10, 'user', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Grace', 'Cooper', 'grace.cooper@email.com', 'qwerty', 14, 'user', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-	('Liam', 'Reed', 'liam.reed@email.com', 'pass123', 14, 'user', to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), to_timestamp('2023-01-01 12:00:00', 'YYYY-MM-DD HH24:MI:SS'));
+	('John', 'Doe', 'john.doe@email.com', 'password123', 2, 'user'),
+	('Jane', 'Smith', 'jane.smith@email.com', 'pass456', 14, 'user'),
+	('Alice', 'Johnson', 'alice.johnson@email.com', 'abc123', 7, 'user'),
+	('Bob', 'Williams', 'bob.williams@email.com', 'qwerty', 7, 'admin'),
+	('Emily', 'Davis', 'emily.davis@email.com', 'pass123', 1, 'user'),
+	('Michael', 'Jones', 'michael.jones@email.com', 'letmein', 2, 'user'),
+	('Sophia', 'Brown', 'sophia.brown@email.com', 'iloveyou', 13, 'user'),
+	('Daniel', 'Moore', 'daniel.moore@email.com', 'password', 11, 'user'),
+	('Olivia', 'Taylor', 'olivia.taylor@email.com', 'passpass', 5, 'user'),
+	('William', 'Hill', 'william.hill@email.com', '123456', 15, 'user'),
+	('Ava', 'Clark', 'ava.clark@email.com', 'hello123', 3,  'user'),
+	('James', 'Johnson', 'james.johnson@email.com', 'passpass', 6, 'admin'),
+	('Mia', 'Walker', 'mia.walker@email.com', 'password123', 2, 'user'),
+	('Benjamin', 'Young', 'benjamin.young@email.com', 'qwerty123', 4, 'user'),
+	('Emma', 'Hall', 'emma.hall@email.com', 'letmein123', 8, 'user'),
+	('Logan', 'Ward', 'logan.ward@email.com', 'iloveyou123', 9, 'user'),
+	('Avery', 'Baker', 'avery.baker@email.com', 'pass456', 11, 'user'),
+	('Elijah', 'Fisher', 'elijah.fisher@email.com', 'abc123', 10, 'user'),
+	('Grace', 'Cooper', 'grace.cooper@email.com', 'qwerty', 14, 'user'),
+	('Liam', 'Reed', 'liam.reed@email.com', 'pass123', 14, 'user');
 
+-- Afficher table
 select * from Users;
 
 
 
+
+-- todo = TABLE FILMS REGARDÉS
 
 -- Création de la table relationnelle Watching
 create table Watching (
@@ -178,6 +255,14 @@ values
 select * from Watching;
 
 
+
+
+-- todo = TABLE FILMS FAVORIS
+
+
+
+
+
 -- REQUÊTE SQL :
 
 -- Les titres et dates de sortie des films du plus récent au plus ancien
@@ -185,8 +270,17 @@ select title, release_dt from Movies
 order by release_dt desc;
 
 -- Les noms, prénoms et âges des acteurs/actrices de plus de 30 ans dans l'ordre alphabétique
-select * from Actors
-where birthday >= (current_date - interval '30 Years');
 
 -- La liste des acteurs/actrices principaux pour un film donné
 
+-- La liste des films pour un acteur/actrice donné
+
+-- Ajouter un film
+
+-- Ajouter un acteur/actrice
+
+-- Modifier un film
+
+-- Supprimer un acteur/actrice
+
+-- Afficher les 3 derniers acteurs/actrices ajouté(e)s
