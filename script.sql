@@ -360,10 +360,20 @@ SELECT * FROM Watching;
 SELECT title, release_dt FROM Movies
 ORDER BY release_dt DESC;
 
--- Les noms, prénoms et âges des acteurs/actrices de plus de 30 ans dans l'ordre alphabétique
+-- Les noms, prénoms et âges des acteurs/actrices de plus de 50 ans dans l'ordre alphabétique
+-- (j'ai modifié l'âge de la consigne car je me suis aperçu trop tard que je n'ai aucun acteur de moins de 30 ans)
+SELECT last_name, first_name, age
+FROM (
+  SELECT last_name, first_name, EXTRACT(YEAR FROM AGE(NOW(), birthday)) AS age
+  FROM Actors
+) AS actor_age
+WHERE age <= 50;
 
--- La liste des acteurs/actrices principaux pour un film donné
-
+-- La liste des acteurs/actrices principaux pour un film donné  -- TODO A VERIEFIER + COURS
+SELECT Movies.movie_id, Movies.title, Actors.actor_id, Actors.last_name, Actors.first_name
+FROM Movies
+INNER JOIN Actors ON Movies.actor_id = Actors.actor_id
+WHERE Movies.title = 'Deadpool';
 -- La liste des films pour un acteur/actrice donné
 
 -- Ajouter un film

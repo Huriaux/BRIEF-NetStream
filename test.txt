@@ -1,12 +1,12 @@
-GENERATION DE DONNÉES (by Chat GPT): 
+(( BROUILLON ))
 
+GENERATION DE DONNÉES (by Chat GPT): 
 
 ("title", "release_dt", "duration", "lastname actor", "firstname actor", "role", "birthday actor", "lastname director", "firstname director")
 
 ('Inception', '2010-07-16', '148', 'DiCaprio', 'Leonardo', 'Dom Cobb', '1974-11-11', 'Nolan', 'Christopher'),
 ('La La Land', '2016-12-09', '128', 'Gosling', 'Ryan', 'Sebastian', '1980-11-12', 'Chazelle', 'Damien'),
 ('The Shawshank Redemption', '1994-09-23', '142', 'Freeman', 'Morgan', 'Ellis Boyd Redding', '1937-06-01', 'Darabont', 'Frank'),
-
 ('Deadpool', '2016-02-12', '108', 'Reynolds', 'Ryan', 'Wade Wilson / Deadpool', '1976-10-23', 'Miller', 'Tim'),
 ('Deadpool 2', '2018-05-10', '119', 'Reynolds', 'Ryan', 'Wade Wilson / Deadpool', '1976-10-23', 'Leitch', 'David'),
 ('Pulp Fiction', '1994-10-14', '154', 'Travolta', 'John', 'Vincent Vega', '1954-02-18', 'Tarantino', 'Quentin'),
