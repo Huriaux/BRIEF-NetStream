@@ -11,7 +11,7 @@ ORDER BY release_dt DESC;
 
 2) Les noms, prénoms et âges des acteurs/actrices de plus de 50 ans dans l'ordre alphabétique
 ```sql
--- (j'ai modifié l'âge de la consigne car je me suis aperçu trop tard que je n'ai aucun acteur de moins de 30 ans)
+-- (j'ai modifié l'âge de la consigne car je me suis aperçu (trop tard) que je n'ai aucun acteur de moins de 30 ans)
 
 SELECT last_name, first_name, age
 FROM (
@@ -37,9 +37,10 @@ INNER JOIN Movies ON  Actors.actor_id = Movies.actor_id
 WHERE Actors.last_name = 'Reynolds';
 ```
 
-5) Ajouter un film (avec une faute d'orthographe dans le nom)
+5) Ajouter un film
 ```sql
--- ("Il faut sauver le soldat Ryan", "1998-07-24", "169 minutes", "Hanks", "Tom", "Captain John Miller", "1956-07-09", "Spielberg", "Steven")
+-- Faute d'orthographe totalement volontaire dans le titre du film ;)
+
 SELECT * FROM Movies;
 INSERT INTO Movies (Title, release_dt, duration, actor_id, director_id)
 	VALUES 	('Il faut sauver le soldat Bryan', '1998-07-24', 169, 7, 11);
