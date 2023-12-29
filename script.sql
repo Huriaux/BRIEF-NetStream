@@ -448,4 +448,4 @@ delete from Actors where actor_id = 16;
 
 SELECT actor_id, last_name, first_name, creation_dt FROM Actors
 ORDER BY creation_dt desc
-lLIMITimit 3;
+lLIMIT 3;
