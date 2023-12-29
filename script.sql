@@ -349,10 +349,3 @@ VALUES
 	(20, 6);
 
 SELECT * FROM Watching;
-
-
-
-
-
-
-
