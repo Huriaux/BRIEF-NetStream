@@ -20,7 +20,11 @@ GENERATION DE DONNÉES (by Chat GPT):
 ('The Silence of the Lambs', '1991-02-14', '118', 'Foster', 'Jodie', 'Clarice Starling', '1962-11-19', 'Demme', 'Jonathan'),
 ('The Social Network', '2010-09-24', '120', 'Eisenberg', 'Jesse', 'Mark Zuckerberg', '1983-10-05', 'Fincher', 'David'),
 ('Goodfellas', '1990-09-19', '146', 'De Niro', 'Robert', 'Henry Hill', '1943-08-17', 'Scorsese', 'Martin'),
-('Casablanca', '1942-11-26', '102', 'Bogart', 'Humphrey', 'Rick Blaine', '1899-12-25', 'Curtiz', 'Michael');*
+('Casablanca', '1942-11-26', '102', 'Bogart', 'Humphrey', 'Rick Blaine', '1899-12-25', 'Curtiz', 'Michael');
+
+Ajout film :
+("Il faut sauver le soldat Ryan", "1998-07-24", "169 minutes", "Hanks", "Tom", "Captain John Miller", "1956-07-09", "Spielberg", "Steven")
+
 
 
 
@@ -49,7 +53,7 @@ GENERATION DE DONNÉES (by Chat GPT):
 
 
 
-EXPLICATION :
+Comment procéder ?
 
 -- je crée ma table --
 
@@ -78,8 +82,12 @@ données pour chaque ligne modifiée --
 (5) CREATE OR REPLACE FUNCTION nom_de_fonction() ...;
 (6) CREATE TRIGGER nom_de_fonction_trigger ...;
 
+
 -- je modifie des données --
+
 (7) UPDATE ON <nom_de_table> ();
 
+
 -- j'affiche toutes mes données de la table concernée --
+
 (8) SELECT * FROM <nom_de_table>;

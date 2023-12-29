@@ -217,6 +217,8 @@ VALUES
 	('Goodfellas', '1990-09-19', 146, 14, 14),
 	('Casablanca', '1942-11-26', 102, 15, 15);
 
+
+
 -- Création fonction (trigger) => si ON MODIFIE des données
 CREATE OR REPLACE FUNCTION set_modification_date()
 RETURNS TRIGGER AS $update_date_movies$
@@ -269,7 +271,7 @@ FOR EACH ROW
 EXECUTE FUNCTION set_creation_date();
 
 -- ajout données
-INSERT INTO Users (first_name, last_name, email, password_user, role_user, favorite_movies_list) 
+INSERT INTO Users (first_name, last_name, email, password_user, favorite_movies_list, role_user) 
 VALUES
 	('John', 'Doe', 'john.doe@email.com', 'password123', 2, 'user'),
 	('Jane', 'Smith', 'jane.smith@email.com', 'pass456', 14, 'user'),
@@ -354,34 +356,3 @@ SELECT * FROM Watching;
 
 
 
--- todo =  REQUÊTE SQL :
-
--- Les titres et dates de sortie des films du plus récent au plus ancien
-SELECT title, release_dt FROM Movies
-ORDER BY release_dt DESC;
-
--- Les noms, prénoms et âges des acteurs/actrices de plus de 50 ans dans l'ordre alphabétique
--- (j'ai modifié l'âge de la consigne car je me suis aperçu trop tard que je n'ai aucun acteur de moins de 30 ans)
-SELECT last_name, first_name, age
-FROM (
-  SELECT last_name, first_name, EXTRACT(YEAR FROM AGE(NOW(), birthday)) AS age
-  FROM Actors
-) AS actor_age
-WHERE age <= 50;
-
--- La liste des acteurs/actrices principaux pour un film donné  -- TODO A VERIEFIER + COURS
-SELECT Movies.movie_id, Movies.title, Actors.actor_id, Actors.last_name, Actors.first_name
-FROM Movies
-INNER JOIN Actors ON Movies.actor_id = Actors.actor_id
-WHERE Movies.title = 'Deadpool';
--- La liste des films pour un acteur/actrice donné
-
--- Ajouter un film
-
--- Ajouter un acteur/actrice
-
--- Modifier un film
-
--- Supprimer un acteur/actrice
-
--- Afficher les 3 derniers acteurs/actrices ajouté(e)s
